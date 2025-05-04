@@ -62,3 +62,105 @@ yarn build
 **Типы и интерфейсы**
 - `type ApiListResponse<Type>` - типизация ответа от сервера. Содержит общее число элементов, полученных с сервера, а также массив данных элементов заданного типа.
 - `type ApiPostMethods` - типизация различных методов POST запросов.
+
+
+
+### Класс WebLarekAPI
+Класс `WebLarekAPI` предоставляет методы для взаимодействия с серверным API интернет-магазина и загрузки данных о товарах и заказах. Наследуется от базового класса Api.
+
+**Конструктор**
+```new WebLarekAPI(cdn: string, baseUrl: string)```
+- `cdn: string` - URL до CDN, который используется для загрузки изображений товаров
+- `baseUrl: string` - базовый URL для запросов к серверу
+
+**Методы**
+- `getProductList(): Promise<IProduct[]>` - получает список всех товаров. Добавляет к каждому товару корректную ссылку на изображение через CDN.
+- `getProductById(id: string): Promise<IProduct>` - получает данные одного товара по его id. Также обогащает объект товара ссылкой на изображение.
+- `postOrder(order: IOrder): Promise<IOrderResult>` - отправляет заказ на сервер. Возвращает объект с результатами оформления заказа типа Promise
+
+
+
+
+### Класс Component
+Класс `Component` - базовый абстрактный класс, от которого наследуются все визуальные компоненты. Содержит утилитарные методы для работы с DOM.
+
+**Конструктор**
+Конструктор класса принимает в качестве аргументов HTML элемент родительского элемента.
+```constructor(protected readonly container: HTMLElement)```
+
+**Методы**
+- `toggleClass(element: HTMLElement, className: string, force?: boolean): void` - добавляет или удаляет CSS-класс у элемента.
+- `setText(element: HTMLElement, value: unknown): void` - устанавливает текстовое содержимое element.
+- `setDisabled(element: HTMLElement, state: boolean): void` - устанавливает или снимает атрибут disabled у элемента формы.
+- `setHidden(element: HTMLElement): void` - cкрывает элемент (через display: none).
+- `setVisible(element: HTMLElement): void` - Показывает элемент (удаляет display: none).
+- `setImage(element: HTMLImageElement, src: string, alt?: string): void` - Устанавливает src и (опционально) alt для изображения.
+- `render(data?: Partial<T>): HTMLElement` - Основной метод отрисовки. Обновляет данные компонента и возвращает DOM-элемент container.
+
+
+
+
+
+## Типы и интерфейсы
+**Ответ от API со списком элементов**
+type ApiListResponse<Type> = {
+  total: number;
+  items: Type[];
+}
+
+**Допустимые HTTP-методы для изменения данных**
+type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+
+**Продукт**
+interface IProduct {
+  id: string;
+  category: string;
+  title: string;
+  image: string;
+  price: number | null;
+  description: string;
+  color: string | null;
+  inBasket: boolean;
+  indexInBasket: number;
+}
+
+**Каталог продуктов**
+interface IProductCatalogModel {
+  products: IProduct[];
+}
+
+**Цвета категорий**
+enum CategoryColors {
+  'другое' = 'other',
+  'софт-скил' = 'soft',
+  'дополнительное' = 'additional',
+  'кнопка' = 'button',
+  'хард-скил' = 'hard',
+}
+
+**Форма заказа (адрес и оплата)**
+interface IOrderForm {
+  address: string;
+  payment: string;
+}
+
+**Контактная форма (почта и телефон)**
+interface IContactsForm {
+  email: string;
+  phone: string;
+}
+
+**Общие данные заказа**
+type IOrderData = IOrderForm & IContactsForm;
+
+**Заказ для отправки**
+type IOrder = IOrderData & {
+  total: number;
+  items: string[];
+};
+
+**Ответ после оформления заказа**
+ interface IOrderResult {
+  id: string;
+  total: number;
+}

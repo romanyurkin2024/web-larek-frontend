@@ -208,7 +208,6 @@ events.on('contacts:submit', () => {
   webLarekApi.postOrder(
     orderModel.getOrderData()
   ).then(result => {
-    console.log(result);
     modalElement.content = successView.render({
       total: result.total
     });
