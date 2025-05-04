@@ -6,6 +6,10 @@ interface IPage {
     productsList: HTMLElement[];
 }
 
+interface IPageActions {
+    onClickOpenBasket: (e: MouseEvent) => void;
+}
+
 export class Page extends Component<IPage> {
     protected _catalogContainer: HTMLElement;
     protected _modalContainer: HTMLElement;
@@ -13,7 +17,7 @@ export class Page extends Component<IPage> {
     protected _basket: HTMLButtonElement;
     protected _pageWrapper: HTMLElement;
 
-    constructor(container: HTMLElement, protected _events: IEvents) {
+    constructor(container: HTMLElement, protected _events: IEvents, actions?: IPageActions) {
         super(container);
 
         this._catalogContainer = ensureElement<HTMLElement>('.gallery');
@@ -23,9 +27,11 @@ export class Page extends Component<IPage> {
         this._basket = ensureElement<HTMLButtonElement>('.header__basket');
 
         if (this._basket) {
-            this._basket.addEventListener('click', () => {
-                this._events.emit('basket:open');
-            });
+            if(actions?.onClickOpenBasket){
+                this._basket.addEventListener('click', (e: MouseEvent) => {
+                    actions?.onClickOpenBasket(e);
+                });
+            }
         }
     }
 

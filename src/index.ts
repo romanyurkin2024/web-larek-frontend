@@ -32,7 +32,11 @@ const successViewTemplate = document.querySelector('#success') as HTMLTemplateEl
 
 // Отображения (View)
 const modalElement = new Modal(document.querySelector('.modal'), events);
-const page = new Page(document.querySelector('.page__wrapper') as HTMLElement, events);
+const page = new Page(document.querySelector('.page__wrapper') as HTMLElement, events, {
+  onClickOpenBasket: (e: MouseEvent) => {
+    events.emit('basket:open');
+  }
+});
 const basketView = new Basket(cloneTemplate(basketTemplate), events, {
   onClick: (e: MouseEvent) => {
     events.emit('order:open');
