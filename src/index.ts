@@ -156,9 +156,8 @@ events.on('ui:basket-remove', ({ id }: { id: string }) => {
 
 // Перерисовка на страницу заполнения форм
 events.on('order:open', () => {
-  const validOrderFields = orderModel.checkOrderValidation();
   modalElement.content = orderForm.render({
-    valid: validOrderFields ? true : false,
+    valid: orderModel.checkOrderValidation(),
     errors: [],
     address: orderModel.address || '',
     payment: orderModel.payment || ''
@@ -184,12 +183,10 @@ events.on('order:validation', (errors: Partial<IOrderForm>) => {
 
 // Переход на второй этап заполнения контактов покупателя
 events.on('order:submit', () => {
-  const validContactsFields = orderModel.checkContactsValidation();
-
   modalElement.content = contactsForm.render({
     email: orderModel.email || '',
     phone: orderModel.phone || '',
-    valid: validContactsFields ? true : false,
+    valid: orderModel.checkContactsValidation(),
     errors: []
   });
 })
