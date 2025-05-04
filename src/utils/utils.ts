@@ -133,3 +133,13 @@ export function createElement<
     }
     return element;
 }
+
+
+export function formValidation<T extends {errors: string; valid: boolean}>(
+  form: T,
+  errors: Partial<Record<string, string>>
+){
+  const hasErrors = Object.keys(errors).length > 0;
+  form.errors = hasErrors ? Object.values(errors).join(' и ') : '';
+  form.valid = !hasErrors;
+}
