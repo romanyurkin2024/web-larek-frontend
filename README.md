@@ -103,7 +103,7 @@ yarn build
 
 ## Типы и интерфейсы
 **Ответ от API со списком элементов**
-type ApiListResponse<Type> = {
+- type ApiListResponse<Type> = {
   total: number;
   items: Type[];
 }
