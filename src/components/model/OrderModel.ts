@@ -1,32 +1,31 @@
-import { IContactsForm, IOrderData, IOrderForm, IProduct } from "../../types";
+import { IContactsForm, IOrder, IOrderData, IOrderForm, IProduct } from "../../types";
 import { addressRegex, emailRegex, phoneRegex } from "../../utils/constants";
 import { IEvents } from "../base/events";
 
-interface IOrderModel extends IOrderData {
-  total: number;
-  products: IProduct[];
+
+interface IOrderModel extends IOrder {
   setOrderData: (field: keyof IOrderModel, value: string) => void;
-  setProducts: (items: IProduct[]) => void;
+  setItems: (items: string[]) => void;
   checkOrderValidation: () => void;
   checkContactsValidation: () => void;
 }
 
 export class OrderModel implements IOrderModel {
   address: string;
-  paymentType: string;
+  payment: string;
   email: string;
   phone: string;
   total: number;
-  products: IProduct[];
+  items: string[];
   error: Partial<Record<keyof IOrderData, string>>;
 
   constructor(protected _events: IEvents) {
     this.address = '';
-    this.paymentType = '';
+    this.payment = '';
     this.email = '';
     this.phone = '';
     this.total = 0;
-    this.products = [];
+    this.items = [];
     this.error = {};
   }
 
@@ -34,8 +33,12 @@ export class OrderModel implements IOrderModel {
     this[field] = value;
   }
 
-  setProducts(items: IProduct[]) {
-    this.products = items;
+  setTotalSum(value: number){
+    this.total = value;
+  }
+
+  setItems(items: string[]) {
+    this.items = items;
   }
 
   checkOrderValidation() {
@@ -44,8 +47,8 @@ export class OrderModel implements IOrderModel {
     if (!this.address || !addressRegex.test(this.address)) {
       errors.address = 'Необходимо указать корректный адрес';
     }
-    if (!this.paymentType) {
-      errors.paymentType = 'Необходимо выбрать вид оплаты';
+    if (!this.payment) {
+      errors.payment = 'Необходимо выбрать вид оплаты';
     }
     this._events.emit('order:validation', errors);
     return Object.keys(errors).length === 0;
@@ -65,13 +68,26 @@ export class OrderModel implements IOrderModel {
     return Object.keys(errors).length === 0;
   }
 
-  clearOrdeData() {
+  getOrderData() {
+    const payment = this.payment === 'cash' ? 'offline' : 'online';
+
+    return {
+      payment: payment,
+      email: this.email,
+      phone: this.phone,
+      address: this.address,
+      total: this.total,
+      items: this.items
+    }
+  }
+
+  clearOrderData() {
     this.address = '';
-    this.paymentType = '';
+    this.payment = '';
     this.email = '';
     this.phone = '';
     this.total = 0;
-    this.products = [];
+    this.items = [];
     this.error = {};
   }
 }

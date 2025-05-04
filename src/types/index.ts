@@ -34,7 +34,7 @@ export enum CategoryColors {
 // Интерфейс формы о заказе пользователя: адрес и оплата.
 export interface IOrderForm {
   address: string,
-  paymentType: string;
+  payment: string;
 }
 
 // Интерфейс формы о контактах пользователя: почта и телефон.
@@ -45,3 +45,14 @@ export interface IContactsForm {
 
 // Интерфейс о всей информации по заказу клиента.
 export type IOrderData = IOrderForm & IContactsForm;
+
+// Тип отправляемого заказа 
+export type IOrder = IOrderData & {
+  total: number;
+  items: string[];
+}
+
+export interface IOrderResult {
+  id: string;
+  total: number;
+}

@@ -122,10 +122,12 @@ events.on('basket:changed', () => {
       }
     }).render(item);
   });
-  
+
   // Отображаем актуальное кол-во товаров в корзине
   page.basketCounter = basketModel.getCounter();
-
+  orderModel.total = basketModel.getSumAllItems();
+  orderModel.items = basketModel.items.map(item => item.id);
+  
   basketView.render({
     items: basketItems,
     price: basketModel.getSumAllItems(),
@@ -153,13 +155,13 @@ events.on('order:open', () => {
     valid: false,
     errors: [],
     address: orderModel.address || '',
-    paymentType: orderModel.paymentType || ''
+    payment: orderModel.payment || ''
   });
 });
 
 // Фиксируем изменение полей методов оплаты и запись данных в модель оформления заказа
 events.on('order:change-payment', ({ paymentMethod }: { paymentMethod: string }) => {
-  orderModel.paymentType = paymentMethod;
+  orderModel.payment = paymentMethod;
   orderModel.checkOrderValidation();
 });
 
@@ -203,12 +205,21 @@ events.on('contacts:validation', (errors: Partial<IContactsForm>) => {
 
 // Открытие окно успешной покупки и отражением суммы заказа
 events.on('contacts:submit', () => {
-  modalElement.content = successView.render({
-    total: basketModel.getSumAllItems()
-  });
-  basketModel.emptyBasket();
-  orderModel.clearOrdeData();
-  modalElement.open();
+  webLarekApi.postOrder(
+    orderModel.getOrderData()
+  ).then(result => {
+    console.log(result);
+    modalElement.content = successView.render({
+      total: result.total
+    });
+    basketModel.emptyBasket();
+    orderModel.clearOrderData();
+    modalElement.open();
+  })
+    .catch(error => {
+      console.log(error)
+      modalElement.close();
+    });
 })
 
 // Закрытие модального окна успешной покупки
