@@ -94,4 +94,8 @@ export class Product extends Component<IProduct> {
       this.setText(this._cardButton, 'Добавить в корзину');
     }
   }
+
+  set isDisabled(value: boolean) {
+    super.setDisabled(this._cardButton, value);
+  }
 }

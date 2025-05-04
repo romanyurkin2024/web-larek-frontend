@@ -15,6 +15,7 @@ export interface IProduct {
   color: string | null;
   inBasket: boolean;
   indexInBasket: number;
+  isDisabled: boolean;
 }
 
 // Интерфейс каталога продуктов

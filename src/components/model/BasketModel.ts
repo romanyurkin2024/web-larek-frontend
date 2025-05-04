@@ -21,6 +21,10 @@ export class BasketModel implements IBasketModel {
     return this._items;
   }
 
+  get itemsId(): string[] {
+    return this._items.map(item => item.id);
+  }
+
   checkItemInBasket(item: IProduct): boolean{
     return this._items.some(product => item.id === product.id);
   }

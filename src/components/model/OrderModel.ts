@@ -3,9 +3,8 @@ import { addressRegex, emailRegex, phoneRegex } from "../../utils/constants";
 import { IEvents } from "../base/events";
 
 
-interface IOrderModel extends IOrder {
+interface IOrderModel extends IOrderData {
   setOrderData: (field: keyof IOrderModel, value: string) => void;
-  setItems: (items: string[]) => void;
   checkOrderValidation: () => void;
   checkContactsValidation: () => void;
 }
@@ -15,8 +14,6 @@ export class OrderModel implements IOrderModel {
   payment: string;
   email: string;
   phone: string;
-  total: number;
-  items: string[];
   error: Partial<Record<keyof IOrderData, string>>;
 
   constructor(protected _events: IEvents) {
@@ -24,21 +21,11 @@ export class OrderModel implements IOrderModel {
     this.payment = '';
     this.email = '';
     this.phone = '';
-    this.total = 0;
-    this.items = [];
     this.error = {};
   }
 
   setOrderData(field: keyof IOrderData, value: string) {
     this[field] = value;
-  }
-
-  setTotalSum(value: number){
-    this.total = value;
-  }
-
-  setItems(items: string[]) {
-    this.items = items;
   }
 
   checkOrderValidation() {
@@ -75,9 +62,7 @@ export class OrderModel implements IOrderModel {
       payment: payment,
       email: this.email,
       phone: this.phone,
-      address: this.address,
-      total: this.total,
-      items: this.items
+      address: this.address
     }
   }
 
@@ -86,8 +71,6 @@ export class OrderModel implements IOrderModel {
     this.payment = '';
     this.email = '';
     this.phone = '';
-    this.total = 0;
-    this.items = [];
     this.error = {};
   }
 }

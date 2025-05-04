@@ -93,6 +93,7 @@ events.on('product:preview', ({ id }: { id: string }) => {
     .then(item => {
       const color: CategoryColors = CategoryColors[item.category as keyof typeof CategoryColors];
       item.inBasket = basketModel.checkItemInBasket(item);
+      if (!item.price) item.isDisabled = true
       modalElement.content = new Product(cloneTemplate(cardPreviewTemplate), events, {
         onClick: (e: MouseEvent) => {
           const targetElement = e.target as HTMLElement;
@@ -103,7 +104,9 @@ events.on('product:preview', ({ id }: { id: string }) => {
         }
       }).render({ ...item, color: color });
       modalElement.open();
-    });
+    }).catch(error => {
+      console.log(error);
+    })
 });
 
 // Добавляем продукт в корзину
@@ -129,9 +132,7 @@ events.on('basket:changed', () => {
 
   // Отображаем актуальное кол-во товаров в корзине
   page.basketCounter = basketModel.getCounter();
-  orderModel.total = basketModel.getSumAllItems();
-  orderModel.items = basketModel.items.map(item => item.id);
-  
+
   basketView.render({
     items: basketItems,
     price: basketModel.getSumAllItems(),
@@ -155,8 +156,9 @@ events.on('ui:basket-remove', ({ id }: { id: string }) => {
 
 // Перерисовка на страницу заполнения форм
 events.on('order:open', () => {
+  const validOrderFields = orderModel.checkOrderValidation();
   modalElement.content = orderForm.render({
-    valid: false,
+    valid: validOrderFields ? true : false,
     errors: [],
     address: orderModel.address || '',
     payment: orderModel.payment || ''
@@ -182,10 +184,12 @@ events.on('order:validation', (errors: Partial<IOrderForm>) => {
 
 // Переход на второй этап заполнения контактов покупателя
 events.on('order:submit', () => {
+  const validContactsFields = orderModel.checkContactsValidation();
+
   modalElement.content = contactsForm.render({
     email: orderModel.email || '',
     phone: orderModel.phone || '',
-    valid: false,
+    valid: validContactsFields ? true : false,
     errors: []
   });
 })
@@ -209,9 +213,12 @@ events.on('contacts:validation', (errors: Partial<IContactsForm>) => {
 
 // Открытие окно успешной покупки и отражением суммы заказа
 events.on('contacts:submit', () => {
-  webLarekApi.postOrder(
-    orderModel.getOrderData()
-  ).then(result => {
+  const payload = {
+    ...orderModel.getOrderData(),
+    total: basketModel.getSumAllItems(),
+    items: basketModel.itemsId
+  }
+  webLarekApi.postOrder(payload).then(result => {
     modalElement.content = successView.render({
       total: result.total
     });
@@ -220,8 +227,7 @@ events.on('contacts:submit', () => {
     modalElement.open();
   })
     .catch(error => {
-      console.log(error)
-      modalElement.close();
+      console.log(error);
     });
 })
 
