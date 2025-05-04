@@ -103,15 +103,20 @@ yarn build
 
 ## Типы и интерфейсы
 **Ответ от API со списком элементов**
-- type ApiListResponse<Type> = {
+```ts
+type ApiListResponse<Type> = {
   total: number;
   items: Type[];
 }
+```
 
 **Допустимые HTTP-методы для изменения данных**
-type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+```ts 
+type ApiPostMethods = 'POST' | 'PUT' | 'DELETE'
+```
 
 **Продукт**
+```ts 
 interface IProduct {
   id: string;
   category: string;
@@ -123,13 +128,17 @@ interface IProduct {
   inBasket: boolean;
   indexInBasket: number;
 }
+```
 
 **Каталог продуктов**
+```ts 
 interface IProductCatalogModel {
   products: IProduct[];
 }
+```
 
 **Цвета категорий**
+```ts 
 enum CategoryColors {
   'другое' = 'other',
   'софт-скил' = 'soft',
@@ -137,30 +146,41 @@ enum CategoryColors {
   'кнопка' = 'button',
   'хард-скил' = 'hard',
 }
+```
 
 **Форма заказа (адрес и оплата)**
+```ts 
 interface IOrderForm {
   address: string;
   payment: string;
 }
+```
 
 **Контактная форма (почта и телефон)**
+```ts 
 interface IContactsForm {
   email: string;
   phone: string;
 }
+```
 
 **Общие данные заказа**
+```ts 
 type IOrderData = IOrderForm & IContactsForm;
+```
 
 **Заказ для отправки**
+```ts 
 type IOrder = IOrderData & {
   total: number;
   items: string[];
 };
+```
 
 **Ответ после оформления заказа**
- interface IOrderResult {
+```ts 
+interface IOrderResult {
   id: string;
   total: number;
 }
+```
